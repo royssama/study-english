@@ -1234,6 +1234,13 @@
             background-color: #ffebee;
         }
 
+        /* 한글 답안 스타일 추가 */
+        .user-answer.korean {
+            color: #333;
+            background-color: white;
+            border: 1px solid #333;
+        }
+
         .speaker-btn {
             background: none;
             border: none;
@@ -1458,11 +1465,15 @@
             const tableBody = document.getElementById('answerSheetTableBody');
             tableBody.innerHTML = '';
 
-            shuffledWords.forEach((word, index) => {
+            words.forEach((word, index) => {
                 const row = document.createElement('tr');
                 // 현재 문제인 경우 하이라이트 클래스 추가
-                const isCurrentQuestion = index === currentQuestionIndex;
-                row.className = isCurrentQuestion ? 'current-question-row' : '';
+                const isCurrentQuestion = currentQuestion && word.word === currentQuestion.question.word;
+                if (isCurrentQuestion) {
+                    row.className = 'current-question-row';
+                    // 스크롤을 위해 ID 추가
+                    row.id = 'current-question-row';
+                }
                 row.innerHTML = `
                     <td>
                         ${word.word}
@@ -1475,6 +1486,12 @@
                 `;
                 tableBody.appendChild(row);
             });
+
+            // 현재 문제 행으로 스크롤
+            const currentRow = document.getElementById('current-question-row');
+            if (currentRow) {
+                currentRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
 
         // 정답지 토글 함수
@@ -1570,12 +1587,18 @@
         // 퀴즈 문제 가져오기 함수 수정
         function getQuiz() {
             if (currentQuestionIndex < shuffledWords.length) {
-                const currentWord = shuffledWords[currentQuestionIndex];
+                // 랜덤하게 문제 선택
+                const randomIndex = Math.floor(Math.random() * shuffledWords.length);
+                const currentWord = shuffledWords[randomIndex];
+                
+                // 선택된 문제를 배열에서 제거하여 중복 방지
+                shuffledWords.splice(randomIndex, 1);
+                
                 currentQuestion = {
                     question: currentWord
                 };
                 document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
-                document.getElementById('totalQuestions').textContent = shuffledWords.length;
+                document.getElementById('totalQuestions').textContent = words.length;
                 const definitionText = document.getElementById('definitionText');
                 definitionText.textContent = currentWord.definition;
                 
@@ -1633,8 +1656,8 @@
                 return;
             }
 
-            const isCorrect = englishAnswer === currentQuestion.question.word.toLowerCase() && 
-                            koreanAnswer === currentQuestion.question.korean;
+            // 영어 단어만 정확히 일치하는지 확인
+            const isCorrect = englishAnswer === currentQuestion.question.word.toLowerCase();
 
             // 정답/오답 알림 표시 (오답일 경우 빨간색으로 표시)
             showNotification(isCorrect ? '정답입니다!' : '오답입니다!', isCorrect);
@@ -1652,7 +1675,7 @@
                     </td>
                     <td>
                         <div class="correct-answer">${currentQuestion.question.korean}</div>
-                        <div class="user-answer correct">${koreanAnswer}</div>
+                        <div class="user-answer korean">${koreanAnswer}</div>
                     </td>
                     <td class="result-correct">정답</td>
                 `;
@@ -1666,7 +1689,7 @@
                     </td>
                     <td>
                         <div class="correct-answer">${currentQuestion.question.korean}</div>
-                        <div class="user-answer incorrect">${koreanAnswer}</div>
+                        <div class="user-answer korean">${koreanAnswer}</div>
                     </td>
                     <td class="result-incorrect">오답</td>
                 `;
