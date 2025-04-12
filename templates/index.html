@@ -1574,7 +1574,8 @@
                 currentQuestion = {
                     question: currentWord
                 };
-                document.getElementById('currentQuestion').textContent = `문제 ${currentQuestionIndex + 1}/${shuffledWords.length}`;
+                document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+                document.getElementById('totalQuestions').textContent = shuffledWords.length;
                 const definitionText = document.getElementById('definitionText');
                 definitionText.textContent = currentWord.definition;
                 
