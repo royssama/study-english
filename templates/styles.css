@@ -1446,8 +1446,8 @@ h2 {
 
 /* 기존 스타일 유지 */
 .header-icon {
-    width: 52px;
-    height: 52px;
+    width: 56px;
+    height: 56px;
     vertical-align: middle;
     margin-right: 10px;
     border-radius: 50%;
@@ -1456,7 +1456,7 @@ h2 {
     border: 3px solid #e1e2e3;
     background: url('icons/icon-192x192.png') no-repeat;
     background-position: center 0px;
-    background-size: 140%;
+    background-size: 150%;
 } 
 .how_use_it{
     display: flex;
