@@ -26,8 +26,67 @@
                         </span>
                         <br>
                         만들어낸 JSON 형식을 복사해서 아래 붙여넣기 하세요
-                        <div class="sample_image" id="sample_image">
-                            <i class="fas fa-image"></i> show sample image
+                        <div style="display: flex; gap: 10px;">
+                            <div class="sample_image" id="sample_image">
+                                <i class="fas fa-image"></i> show sample image.
+                            </div>
+                            <div class="sample_json_data" id="sample_json_data">
+                                <i class="fas fa-copy"></i> copy sample json data.
+                            </div>
+                        </div>
+                        <div id="sampleJsonData" style="display: none;">
+[
+  {
+    "word": "time",
+    "definition": "This is what you look at when you want to know what hour it is.",
+    "korean": "시간"
+  },
+  {
+    "word": "watch",
+    "definition": "You wear this on your wrist to keep track of the time.",
+    "korean": "시계"
+  },
+  {
+    "word": "banana",
+    "definition": "A long yellow fruit that monkeys love to eat.",
+    "korean": "바나나"
+  },
+  {
+    "word": "phone",
+    "definition": "A device you use to make calls, send messages, or browse the internet.",
+    "korean": "핸드폰"
+  },
+  {
+    "word": "moniter",
+    "definition": "A screen you look at when using a computer.",
+    "korean": "모니터"
+  },
+  {
+    "word": "flesh",
+    "definition": "The soft part of your body that's under your skin and muscles.",
+    "korean": "고기"
+  },
+  {
+    "word": "globe",
+    "definition": "A model or map of the Earth, usually round and used to study geography.",
+    "korean": "지구본"
+  },
+  {
+    "word": "clap",
+    "definition": "You do this with your hands when you're happy or cheering for someone.",
+    "korean": "박수를 치다"
+  },
+  {
+    "word": "play",
+    "definition": "Children and adults both enjoy doing this for fun, often with toys or games.",
+    "korean": "놀다"
+  },
+  {
+    "word": "plum",
+    "definition": "A small, round, purple fruit that is sweet and juicy.",
+    "korean": "자두"
+  }
+]
                         </div>
                     </div>
                 </div>
@@ -213,7 +272,7 @@
         function showNotification(message, isCorrect = true) {
             const notification = document.createElement('div');
             notification.className = `notification-popup ${isCorrect ? 'correct' : 'incorrect'}`;
-            notification.textContent = message;
+            notification.innerHTML = message;
             document.body.appendChild(notification);
             
             setTimeout(() => {
@@ -651,6 +710,16 @@
 
         // 샘플 이미지 클릭 이벤트 리스너 추가
         document.querySelector('.sample_image').addEventListener('click', toggleSampleImage);
+
+        // 샘플 JSON 데이터 클릭 이벤트 리스너 추가
+        document.querySelector('.sample_json_data').addEventListener('click', function() {
+            const jsonData = document.getElementById('sampleJsonData').textContent;
+            navigator.clipboard.writeText(jsonData).then(() => {
+                showNotification('JSON 데이터가 클립보드에 복사되었습니다!<br>아래 붙여넣기해서 사용해보세요', 'success');
+            }).catch(err => {
+                showNotification('복사에 실패했습니다.', 'error');
+            });
+        });
 
         // 단어 목록 초기화
         words = [];

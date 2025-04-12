@@ -1478,6 +1478,25 @@ h2 {
     color: #0056b3;
 }
 
+.sample_json_data {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+    transition: color 0.3s;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.sample_json_data i {
+    font-size: 14px;
+}
+
+.sample_json_data:hover {
+    color: #0056b3;
+}
+
 /* 샘플 이미지 레이어 스타일 */
 .sample-image-layer {
     position: fixed;
