@@ -219,7 +219,7 @@
         let incorrectSound = new Audio('sounds/no.wav');
         let startSound = new Audio('sounds/start.wav');
         let shuffledWords = []; // 섞인 단어 목록을 저장할 변수 추가
-
+        let totalCnt=0;
         // 단어 등록 함수
         function addWordsFromText() {
             const text = document.getElementById('wordInputArea').value.trim();
@@ -265,6 +265,7 @@
         // 단어 목록 섞기 함수 추가
         function shuffleWords() {
             shuffledWords = [...words];
+            totalCnt=shuffledWords.length;
             for (let i = shuffledWords.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [shuffledWords[i], shuffledWords[j]] = [shuffledWords[j], shuffledWords[i]];
@@ -409,7 +410,9 @@
 
         // 퀴즈 문제 가져오기 함수 수정
         function getQuiz() {
-            if (currentQuestionIndex < shuffledWords.length) {
+            //if (currentQuestionIndex < shuffledWords.length) {
+            if (currentQuestionIndex < totalCnt) {
+                
                 // 랜덤하게 문제 선택
                 const randomIndex = Math.floor(Math.random() * shuffledWords.length);
                 const currentWord = shuffledWords[randomIndex];
@@ -528,7 +531,7 @@
             // 자동으로 다음 문제로 이동
             setTimeout(() => {
                 currentQuestionIndex++;
-                if (currentQuestionIndex < shuffledWords.length) {
+                if (currentQuestionIndex < totalCnt) {
                     getQuiz();
                 } else {
                     showResultSummary();
