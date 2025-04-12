@@ -681,6 +681,31 @@
             padding: 20px;
             margin: 20px 0;
             min-height: 100px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666" width="24px" height="24px"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+            background-size: 24px;
+            padding-right: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            opacity: 1;
+            position: relative;
+        }
+        /* .definition-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 24px;
+            height: 24px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666" width="24px" height="24px"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.5;
+            pointer-events: none;
+        } */
+        .definition-box:hover {
+            background-color: rgba(0, 0, 0, 0.05);
         }
 
         .definition-box p {
@@ -1208,6 +1233,42 @@
             color: #dc3545;
             background-color: #ffebee;
         }
+
+        .speaker-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 5px;
+            color: #666;
+            transition: color 0.3s;
+        }
+        .speaker-btn:hover {
+            color: #333;
+        }
+        .speaker-btn i {
+            font-size: 16px;
+        }
+
+        /* #definitionText {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666" width="24px" height="24px"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right center;
+            background-size: 24px;
+            padding-right: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #definitionText:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        } */
+        .current-question-row {
+            background-color: #e3f2fd !important;
+            font-weight: bold;
+        }
+        .current-question-row td {
+            border-bottom: 2px solid #2196F3;
+        }
     </style>
 </head>
 <body>
@@ -1245,7 +1306,8 @@
                 <div class="question-container">
                     <div class="progress-counter">
                         <span class="counter">
-                            <span id="currentQuestion">1</span> / <span id="totalQuestions">0</span>
+                            <span id="currentQuestion">1</span> 
+                            / <span id="totalQuestions">0</span>
                         </span>
                         <div class="button-group">
                             <button onclick="retryQuiz()" class="retry-btn">다시 풀기</button>
@@ -1255,6 +1317,7 @@
                     <h2>정의를 보고 단어를 입력하세요</h2>
                     <div class="definition-box">
                         <p id="definitionText"></p>
+                        <div id="exampleContainer" style="display: none;"></div>
                     </div>
                     <div class="answer-inputs">
                         <div class="input-row">
@@ -1388,10 +1451,18 @@
             const tableBody = document.getElementById('answerSheetTableBody');
             tableBody.innerHTML = '';
 
-            words.forEach(word => {
+            shuffledWords.forEach((word, index) => {
                 const row = document.createElement('tr');
+                // 현재 문제인 경우 하이라이트 클래스 추가
+                const isCurrentQuestion = index === currentQuestionIndex;
+                row.className = isCurrentQuestion ? 'current-question-row' : '';
                 row.innerHTML = `
-                    <td>${word.word}</td>
+                    <td>
+                        ${word.word}
+                        <button class="speaker-btn" onclick="speakWord('${word.word}')">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                    </td>
                     <td>${word.definition}</td>
                     <td>${word.korean}</td>
                 `;
@@ -1405,6 +1476,8 @@
             if (layer.style.display === 'none' || layer.style.display === '') {
                 layer.style.display = 'block';
                 layer.classList.add('active');
+                // 현재 문제 업데이트
+                updateAnswerSheet();
                 // ESC 키 이벤트 리스너 추가
                 document.addEventListener('keydown', handleEscKey);
                 // 레이어 클릭 이벤트 리스너 추가
@@ -1489,19 +1562,42 @@
 
         // 퀴즈 문제 가져오기 함수 수정
         function getQuiz() {
-            if (currentQuestionIndex >= shuffledWords.length) {
-                showResultSummary();
-                return;
+            if (currentQuestionIndex < shuffledWords.length) {
+                const currentWord = shuffledWords[currentQuestionIndex];
+                currentQuestion = {
+                    question: currentWord
+                };
+                document.getElementById('currentQuestion').textContent = `문제 ${currentQuestionIndex + 1}/${shuffledWords.length}`;
+                const definitionText = document.getElementById('definitionText');
+                definitionText.textContent = currentWord.definition;
+                
+                // definition-box에 클릭 이벤트 추가
+                const definitionBox = document.querySelector('.definition-box');
+                definitionBox.style.cursor = 'pointer';
+                definitionBox.onclick = function() {
+                    speakWord(definitionText.textContent);
+                };
+                
+                document.getElementById('englishInput').value = '';
+                document.getElementById('koreanInput').value = '';
+                document.getElementById('englishInput').focus();
+                
+                // 예문이 있으면 표시하고 스피커 버튼 추가
+                const exampleContainer = document.getElementById('exampleContainer');
+                if (currentWord.example) {
+                    exampleContainer.innerHTML = `
+                        <div class="example-sentence">
+                            ${currentWord.example}
+                            <button class="speaker-btn" onclick="speakWord('${currentWord.example}')">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        </div>
+                    `;
+                    exampleContainer.style.display = 'block';
+                } else {
+                    exampleContainer.style.display = 'none';
+                }
             }
-
-            currentQuestion = {
-                question: shuffledWords[currentQuestionIndex]
-            };
-
-            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
-            document.getElementById('definitionText').textContent = currentQuestion.question.definition;
-            document.getElementById('englishInput').value = '';
-            document.getElementById('koreanInput').value = '';
         }
 
         // 정답 확인 함수
@@ -1578,7 +1674,7 @@
             // 자동으로 다음 문제로 이동
             setTimeout(() => {
                 currentQuestionIndex++;
-                if (currentQuestionIndex < totalQuestions) {
+                if (currentQuestionIndex < shuffledWords.length) {
                     getQuiz();
                 } else {
                     showResultSummary();
@@ -1673,6 +1769,17 @@
             totalQuestions = 0;
             document.getElementById('resultsTableBody').innerHTML = '';
             document.getElementById('answerSheetTableBody').innerHTML = '';
+        }
+
+        function speakWord(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.7; // 속도 조절 (0.1 ~ 10, 기본값 1)
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('이 브라우저에서는 음성 기능을 지원하지 않습니다.');
+            }
         }
     </script>
 </body>
