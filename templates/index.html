@@ -1278,11 +1278,22 @@
         .current-question-row td {
             border-bottom: 2px solid #2196F3;
         }
+         /* 기존 스타일 유지 */
+         .header-icon {
+            width: 52px;
+            height: 52px;
+            vertical-align: middle;
+            margin-right: 10px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 3px solid #e1e2e3;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>영어 단어 학습</h1>
+        <h1><img src="icons/icon-192x192.png" alt="" class="header-icon">영어 단어 학습</h1>
         
         <!-- 시작 화면 -->
         <div id="startScreen">
