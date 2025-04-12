@@ -1402,14 +1402,21 @@
             try {
                 const jsonData = JSON.parse(text);
                 if (Array.isArray(jsonData)) {
-                    words = jsonData.map(item => ({
-                        word: item.english,
-                        definition: item.definition,
-                        korean: item.korean
-                    }));
+                    words = jsonData.map(item => {
+                        // 객체의 속성들을 배열로 변환
+                        const properties = Object.entries(item);
+                        
+                        // 첫 번째, 두 번째, 세 번째 속성을 각각 영어, 정의, 한글에 매핑
+                        return {
+                            word: properties[0] ? properties[0][1] : '', // 첫 번째 속성의 값
+                            definition: properties[1] ? properties[1][1] : '', // 두 번째 속성의 값
+                            korean: properties[2] ? properties[2][1] : '' // 세 번째 속성의 값
+                        };
+                    }).filter(word => word.word && word.definition && word.korean); // 필수 속성이 모두 있는 경우만 필터링
+
                     updateAnswerSheet();
                     showNotification('단어가 성공적으로 등록되었습니다.');
-                    
+
                     // 2초 후에 퀴즈 시작
                     setTimeout(() => {
                         startQuiz();
