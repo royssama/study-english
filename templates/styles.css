@@ -33,6 +33,9 @@ body {
 }
 .header-title{
     display: flex;
+    line-height: 50px;
+    font-size: 24px;
+    font-weight: bold;
 }
 /* Start Screen Styles */
 .start-screen {
