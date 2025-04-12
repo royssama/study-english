@@ -217,7 +217,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .current-question,
@@ -279,7 +279,7 @@ body {
 .button-group {
     display: flex;
     gap: 10px;
-    margin-top: 20px;
+    margin-top: 5px;
     width: 273px;
 }
 
@@ -853,7 +853,7 @@ h2 {
     border: 1px solid #dee2e6;
     border-radius: 8px;
     padding: 20px;
-    margin: 20px 0;
+    margin: 13px 0;
     min-height: 100px;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666" width="24px" height="24px"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>');
     background-repeat: no-repeat;
@@ -880,13 +880,13 @@ h2 {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    margin: 20px 0;
+    margin: 5px 0;
 }
 
 .input-row {
     display: flex;
     gap: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 2px;
 }
 
 .input-group {
@@ -1011,11 +1011,42 @@ h2 {
     padding: 20px;
 }
 
+.progress-counters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0px;
+    gap: 10px;
+}
+
+.progress-counters .counter {
+    font-size: 16px;
+    font-weight: bold;
+    color: #666;
+}
+
+.progress-counters .retry-btn,
+.progress-counters .start-over-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+
+
+
+
+
 .progress-counter {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     gap: 10px;
 }
 
@@ -1130,7 +1161,7 @@ h2 {
 }
 
 .next-question-container {
-    margin-top: 20px;
+    margin-top: 2px;
     text-align: center;
 }
 
@@ -1181,7 +1212,7 @@ h2 {
 }
 
 .input-group {
-    margin-bottom: 15px;
+    margin-bottom: 7px;
 }
 
 .input-group label {
