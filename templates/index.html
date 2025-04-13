@@ -9,6 +9,19 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     <link href="./styles.css?v04" rel="stylesheet">
+    <style>
+        .result-correct {
+            color: #28a745 !important;
+            font-weight: bold !important;
+        }
+        .result-incorrect {
+            color: #dc3545 !important;
+            font-weight: bold !important;
+        }
+        .result-table-container td:last-child {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -118,10 +131,29 @@
         </div>
 
         <!-- 퀴즈 섹션 -->
-        <div id="quizSection" style="display: none;">
-            <div class="quiz-container">
+        <div class="quiz-section" id="quizSection" style="display: none;">
+            <div class="quiz-mode-selector">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="quizMode" id="mode1" value="text" checked>
+                    <label class="form-check-label" for="mode1">
+                        <i class="fas fa-font"></i> 텍스트 퀴즈
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="quizMode" id="mode2" value="sound">
+                    <label class="form-check-label" for="mode2">
+                        <i class="fas fa-volume-up"></i> 소리 퀴즈
+                    </label>
+                </div>
+            </div>
+
+            <div class="quiz-container" id="textQuizContainer">
+                <div class="progress-container">
+                   
+                    <span class="progress-text">0/0</span>
+                </div>
                 <div class="question-container">
-                    <div class="progress-counters">
+                    <div class="progress-counters" style="display: none;">
                         <span class="counter">
                             <span id="currentQuestion">1</span> 
                             / <span id="totalQuestions">0</span>
@@ -163,6 +195,52 @@
                             </tr>
                         </thead>
                         <tbody id="resultsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="quiz-container" id="soundQuizContainer" style="display: none;">
+                <div class="progress-container">
+                  
+                    <span class="progress-text">0/0</span>
+                </div>
+                <div class="question-container">
+                    <div class="progress-counters" style="display: none;">
+                        <span class="counter">
+                            <span id="currentQuestion">1</span> 
+                            / <span id="totalQuestions">0</span>
+                        </span>
+                    </div>
+                    <div class="progress-counter">
+                        <div class="button-group">
+                            <button onclick="retrySoundQuiz()" class="retry-btn">다시 풀기</button>
+                            <button onclick="startOver()" class="start-over-btn">처음부터 다시하기</button>
+                        </div>
+                    </div>
+                    <div class="sound-controls">
+                        <button class="btn btn-primary play-sound-btn">
+                            <i class="fas fa-volume-up"></i> 발음 듣기
+                        </button>
+                        <button class="btn btn-secondary repeat-sound-btn" style="display: none;">
+                            <i class="fas fa-redo"></i> 다시 듣기
+                        </button>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" class="form-control english-input" placeholder="영어 단어 입력">
+                        <input type="text" class="form-control korean-input" placeholder="한글 뜻 입력">
+                        <button class="btn btn-primary check-btn">확인</button>
+                    </div>
+                </div>
+                <div class="result-table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>영어</th>
+                                <th>한글</th>
+                                <th>결과</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -331,33 +409,33 @@
                 // 현재 문제 업데이트
                 updateAnswerSheet();
                 // ESC 키 이벤트 리스너 추가
-                document.addEventListener('keydown', handleEscKey);
+                document.addEventListener('keydown', handleAnswerSheetEscKey);
                 // 레이어 클릭 이벤트 리스너 추가
-                layer.addEventListener('click', handleLayerClick);
+                layer.addEventListener('click', handleAnswerSheetLayerClick);
             } else {
                 closeAnswerSheet();
             }
         }
 
-        // 정답지 닫기 함수 추가
+        // 정답지 닫기 함수 수정
         function closeAnswerSheet() {
             const layer = document.getElementById('answerSheetLayer');
             layer.style.display = 'none';
             layer.classList.remove('active');
             // 이벤트 리스너 제거
-            document.removeEventListener('keydown', handleEscKey);
-            layer.removeEventListener('click', handleLayerClick);
+            document.removeEventListener('keydown', handleAnswerSheetEscKey);
+            layer.removeEventListener('click', handleAnswerSheetLayerClick);
         }
 
-        // ESC 키 핸들러 함수
-        function handleEscKey(event) {
+        // 정답지 ESC 키 핸들러 함수
+        function handleAnswerSheetEscKey(event) {
             if (event.key === 'Escape') {
                 closeAnswerSheet();
             }
         }
 
-        // 레이어 클릭 핸들러 함수
-        function handleLayerClick(event) {
+        // 정답지 레이어 클릭 핸들러 함수
+        function handleAnswerSheetLayerClick(event) {
             // 클릭된 요소가 레이어 자체인 경우에만 닫기
             if (event.target === event.currentTarget) {
                 closeAnswerSheet();
@@ -404,7 +482,10 @@
             hideStartScreen();
             currentQuestionIndex = 0;
             totalQuestions = words.length;
-            document.getElementById('totalQuestions').textContent = totalQuestions;
+            
+            // 진행 상황 업데이트
+            
+            
             document.getElementById('quizSection').style.display = 'block';
             
             // 단어 목록 섞기
@@ -414,9 +495,7 @@
 
         // 퀴즈 문제 가져오기 함수 수정
         function getQuiz() {
-            //if (currentQuestionIndex < shuffledWords.length) {
             if (currentQuestionIndex < totalCnt) {
-                
                 // 랜덤하게 문제 선택
                 const randomIndex = Math.floor(Math.random() * shuffledWords.length);
                 const currentWord = shuffledWords[randomIndex];
@@ -427,37 +506,50 @@
                 currentQuestion = {
                     question: currentWord
                 };
-                document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
-                document.getElementById('totalQuestions').textContent = words.length;
-                const definitionText = document.getElementById('definitionText');
-                definitionText.textContent = currentWord.definition;
+
+                // 현재 선택된 퀴즈 모드 확인
+                const selectedMode = document.querySelector('input[name="quizMode"]:checked').value;
                 
-                // definition-box에 클릭 이벤트 추가
-                const definitionBox = document.querySelector('.definition-box');
-                definitionBox.style.cursor = 'pointer';
-                definitionBox.onclick = function() {
-                    speakWord(definitionText.textContent);
-                };
-                
-                document.getElementById('englishInput').value = '';
-                document.getElementById('koreanInput').value = '';
-                document.getElementById('englishInput').focus();
-                
-                // 예문이 있으면 표시하고 스피커 버튼 추가
-                const exampleContainer = document.getElementById('exampleContainer');
-                if (currentWord.example) {
-                    exampleContainer.innerHTML = `
-                        <div class="example-sentence">
-                            ${currentWord.example}
-                            <button class="speaker-btn" onclick="speakWord('${currentWord.example}')">
-                                <i class="fas fa-volume-up"></i>
-                            </button>
-                        </div>
-                    `;
-                    exampleContainer.style.display = 'block';
+                if (selectedMode === 'text') {
+                    // 텍스트 퀴즈 모드
+                    document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+                    document.getElementById('totalQuestions').textContent = totalQuestions;
+                    
+                    const definitionText = document.getElementById('definitionText');
+                    if (definitionText) {
+                        definitionText.textContent = currentWord.definition;
+                        
+                        const definitionBox = document.querySelector('.definition-box');
+                        definitionBox.style.cursor = 'pointer';
+                        definitionBox.onclick = function() {
+                            speakWord(definitionText.textContent);
+                        };
+                    }
+                    
+                    document.getElementById('englishInput').value = '';
+                    document.getElementById('koreanInput').value = '';
+                    document.getElementById('englishInput').focus();
                 } else {
-                    exampleContainer.style.display = 'none';
+                    // 소리 퀴즈 모드
+                    soundPlayed = false;
+                    document.querySelector('.play-sound-btn').style.display = 'inline-block';
+                    document.querySelector('.repeat-sound-btn').style.display = 'none';
+                    
+                    const englishInput = document.querySelector('#soundQuizContainer .english-input');
+                    const koreanInput = document.querySelector('#soundQuizContainer .korean-input');
+                    
+                    if (englishInput) englishInput.value = '';
+                    if (koreanInput) koreanInput.value = '';
+                    if (englishInput) englishInput.focus();
                 }
+                
+                // 공통 진행 상황 업데이트
+                const progressTexts = document.querySelectorAll('.progress-text');
+                progressTexts.forEach(progressText => {
+                    progressText.textContent = `${currentQuestionIndex + 1}/${totalQuestions}`;
+                });
+                
+               
             }
         }
 
@@ -598,7 +690,7 @@
             }
             
             currentQuestionIndex = 0;
-            document.getElementById('resultsTableBody').innerHTML = '';
+            document.querySelector('.result-table-container tbody').innerHTML = '';
             // 단어 목록 다시 섞기
             shuffleWords();
             getQuiz();
@@ -628,7 +720,7 @@
             words = [];
             currentQuestionIndex = 0;
             totalQuestions = 0;
-            document.getElementById('resultsTableBody').innerHTML = '';
+            document.querySelector('.result-table-container tbody').innerHTML = '';
             document.getElementById('answerSheetTableBody').innerHTML = '';
         }
 
@@ -737,6 +829,202 @@
         currentQuestionIndex = 0;
         totalQuestions = 0;
         shuffledWords = [];
+
+        // 퀴즈 모드 전환 이벤트 리스너
+        document.querySelectorAll('input[name="quizMode"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // 퀴즈가 진행 중인지 확인 (currentQuestionIndex가 0보다 크고 totalCnt보다 작을 때)
+                if (currentQuestionIndex > 0 && currentQuestionIndex < totalCnt) {
+                    if (!confirm('문제푸는중입니다\n퀴즈 변경시 풀던 문제가 초기화됩니다\n퀴즈변경을 하시겠습니까?')) {
+                        // 취소 시 이전 선택으로 되돌림
+                        this.checked = !this.checked;
+                        return;
+                    }
+                }
+
+                const textQuizContainer = document.getElementById('textQuizContainer');
+                const soundQuizContainer = document.getElementById('soundQuizContainer');
+                
+                if (this.value === 'text') {
+                    textQuizContainer.style.display = 'block';
+                    soundQuizContainer.style.display = 'none';
+                } else {
+                    textQuizContainer.style.display = 'none';
+                    soundQuizContainer.style.display = 'block';
+                }
+
+                // 퀴즈 모드 변경 시 문제 초기화
+                currentQuestionIndex = 0;
+                shuffleWords();
+                getQuiz();
+
+                // 결과 테이블 초기화
+                document.getElementById('resultsTableBody').innerHTML = '';
+                document.querySelector('#soundQuizContainer .result-table-container tbody').innerHTML = '';
+            });
+        });
+
+        // 소리 퀴즈 관련 변수
+        let soundPlayed = false;
+
+        // 발음 듣기 버튼 이벤트 리스너
+        document.querySelector('.play-sound-btn').addEventListener('click', function() {
+            if (currentQuestion && currentQuestion.question) {
+                speakWord(currentQuestion.question.word);
+                soundPlayed = true;
+                this.style.display = 'none';
+                document.querySelector('.repeat-sound-btn').style.display = 'inline-block';
+            }
+        });
+
+        // 다시 듣기 버튼 이벤트 리스너
+        document.querySelector('.repeat-sound-btn').addEventListener('click', function() {
+            if (currentQuestion && currentQuestion.question) {
+                speakWord(currentQuestion.question.word);
+            }
+        });
+
+        // 소리 퀴즈용 checkAnswer 함수
+        function checkSoundAnswer() {
+            const englishInput = document.querySelector('#soundQuizContainer .english-input');
+            const koreanInput = document.querySelector('#soundQuizContainer .korean-input');
+            const englishAnswer = englishInput.value.trim().toLowerCase();
+            const koreanAnswer = koreanInput.value.trim();
+
+            if (!soundPlayed) {
+                showNotification('먼저 발음을 들어보세요!', false);
+                return;
+            }
+
+            if (!englishAnswer || !koreanAnswer) {
+                showNotification('영어와 한글 모두 입력해주세요!', false);
+                return;
+            }
+
+            const isCorrect = englishAnswer === currentQuestion.question.word.toLowerCase();
+            playSound(isCorrect);
+
+            // 결과 테이블 업데이트
+            const resultsTableBody = document.querySelector('#soundQuizContainer .result-table-container tbody');
+            const newRow = document.createElement('tr');
+            
+            if (isCorrect) {
+                newRow.innerHTML = `
+                    <td>
+                        <div class="correct-answer">${currentQuestion.question.word}</div>
+                        <div class="user-answer english correct">${englishAnswer}</div>
+                    </td>
+                    <td>
+                        <div class="correct-answer">${currentQuestion.question.korean}</div>
+                        <div class="user-answer korean">${koreanAnswer}</div>
+                    </td>
+                    <td class="result-correct">정답</td>
+                `;
+            } else {
+                newRow.innerHTML = `
+                    <td>
+                        <div class="correct-answer">${currentQuestion.question.word}</div>
+                        <div class="user-answer english incorrect">${englishAnswer}</div>
+                    </td>
+                    <td>
+                        <div class="correct-answer">${currentQuestion.question.korean}</div>
+                        <div class="user-answer korean">${koreanAnswer}</div>
+                    </td>
+                    <td class="result-incorrect">오답</td>
+                `;
+            }
+
+            resultsTableBody.appendChild(newRow);
+            document.querySelector('#soundQuizContainer .result-table-container').style.display = 'block';
+
+            // 다음 문제로 이동
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < totalCnt) {
+                    getQuiz();
+                } else {
+                    showSoundQuizResult();
+                }
+            }, 1000);
+        }
+
+        // 소리 퀴즈용 checkAnswer 버튼 이벤트 리스너
+        document.querySelector('#soundQuizContainer .check-btn').addEventListener('click', checkSoundAnswer);
+
+        // 소리 퀴즈 입력창 엔터 키 이벤트 리스너 추가
+        document.querySelectorAll('#soundQuizContainer .english-input, #soundQuizContainer .korean-input').forEach(input => {
+            input.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    checkSoundAnswer();
+                }
+            });
+        });
+
+        // 백틱 키 이벤트 리스너 추가
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '`' && document.getElementById('soundQuizContainer').style.display !== 'none') {
+                event.preventDefault();
+                const playSoundBtn = document.querySelector('.play-sound-btn');
+                const repeatSoundBtn = document.querySelector('.repeat-sound-btn');
+                
+                if (playSoundBtn && playSoundBtn.style.display !== 'none') {
+                    playSoundBtn.click();
+                } else if (repeatSoundBtn && repeatSoundBtn.style.display !== 'none') {
+                    repeatSoundBtn.click();
+                }
+            }
+        });
+
+        // 소리 퀴즈 결과 표시 함수 추가
+        function showSoundQuizResult() {
+            const correctAnswers = document.querySelectorAll('#soundQuizContainer .result-correct').length;
+            const totalAnswers = words.length;
+            
+            // 오버레이 생성
+            const overlay = document.createElement('div');
+            overlay.className = 'result-overlay';
+            document.body.appendChild(overlay);
+            
+            // 결과 요약 생성
+            const resultSummary = document.createElement('div');
+            resultSummary.className = 'result-summary';
+            resultSummary.innerHTML = `
+                <h3>퀴즈 결과</h3>
+                <p>총 ${totalAnswers}문제 중 ${correctAnswers}문제 정답!</p>
+                <div class="result-buttons">
+                    <button onclick="retrySoundQuiz()" class="retry-btn">다시 풀기</button>
+                    <button onclick="closeSoundQuiz()" class="close-btn">닫기</button>
+                </div>
+            `;
+            
+            document.body.appendChild(resultSummary);
+            overlay.style.display = 'block';
+        }
+
+        // 소리 퀴즈 닫기 함수 추가
+        function closeSoundQuiz() {
+            document.querySelector('.result-summary').remove();
+            document.querySelector('.result-overlay').remove();
+        }
+
+        // 소리 퀴즈 다시 풀기 함수 수정
+        function retrySoundQuiz() {
+            const resultSummary = document.querySelector('.result-summary');
+            const resultOverlay = document.querySelector('.result-overlay');
+            
+            if (resultSummary) {
+                resultSummary.remove();
+            }
+            if (resultOverlay) {
+                resultOverlay.remove();
+            }
+            
+            currentQuestionIndex = 0;
+            document.querySelector('#soundQuizContainer .result-table-container tbody').innerHTML = '';
+            shuffleWords();
+            getQuiz();
+        }
     </script>
 </body>
 </html> 

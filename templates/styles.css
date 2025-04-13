@@ -1040,11 +1040,6 @@ h2 {
     transition: all 0.3s;
 }
 
-
-
-
-
-
 .progress-counter {
     display: flex;
     justify-content: space-between;
@@ -1600,4 +1595,60 @@ h2 {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+}
+
+/* 퀴즈 모드 선택기 스타일 */
+.quiz-mode-selector {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.quiz-mode-selector .form-check-inline {
+    margin-right: 20px;
+}
+
+.quiz-mode-selector .form-check-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.quiz-mode-selector .form-check-label:hover {
+    background-color: #e9ecef;
+}
+
+.quiz-mode-selector .form-check-input:checked + .form-check-label {
+    background-color: #007bff;
+    color: white;
+}
+
+/* 소리 퀴즈 컨테이너 스타일 */
+#soundQuizContainer .sound-controls {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#soundQuizContainer .play-sound-btn,
+#soundQuizContainer .repeat-sound-btn {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+#soundQuizContainer .play-sound-btn:hover,
+#soundQuizContainer .repeat-sound-btn:hover {
+    transform: scale(1.05);
+}
+
+#soundQuizContainer .play-sound-btn i,
+#soundQuizContainer .repeat-sound-btn i {
+    margin-right: 8px;
 }
