@@ -1607,7 +1607,8 @@ h2 {
 }
 
 .quiz-mode-selector .form-check-inline {
-    margin-right: 20px;
+    margin: 0px 10px;
+    padding-left: 7px;
 }
 
 .quiz-mode-selector .form-check-label {
@@ -1615,13 +1616,19 @@ h2 {
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    padding: 8px 15px;
+    padding: 8px 10px;
     border-radius: 20px;
     transition: all 0.3s ease;
 }
 
 .quiz-mode-selector .form-check-label:hover {
     background-color: #e9ecef;
+}
+.form-check-input{
+    width: 15px;
+    height: 15px;
+    margin-top: 12px;
+    margin-left: -17px !important;
 }
 
 .quiz-mode-selector .form-check-input:checked + .form-check-label {
