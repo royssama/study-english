@@ -292,6 +292,23 @@
     </div>
 
     <script>
+        // 터치 이벤트 제어
+        document.addEventListener('touchmove', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
+        // 스크롤 위치 저장
+        let lastScrollTop = 0;
+        document.addEventListener('scroll', function() {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            if (currentScroll <= 0) {
+                window.scrollTo(0, 1);
+            }
+            lastScrollTop = currentScroll;
+        });
+
         // 전역 변수
         let words = []; // 단어 목록
         let currentQuestion = null;
@@ -691,6 +708,7 @@
             
             currentQuestionIndex = 0;
             document.querySelector('.result-table-container tbody').innerHTML = '';
+            document.querySelector('.results-table tbody').innerHTML = '';
             // 단어 목록 다시 섞기
             shuffleWords();
             getQuiz();
@@ -1022,6 +1040,7 @@
             
             currentQuestionIndex = 0;
             document.querySelector('#soundQuizContainer .result-table-container tbody').innerHTML = '';
+            document.querySelector('.results-table tbody').innerHTML = '';
             shuffleWords();
             getQuiz();
         }

@@ -1,27 +1,24 @@
-const CACHE_NAME = 'study-english-v1';
+const CACHE_NAME = 'english-learning-v1';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/manifest.json',
-    '/icons/icon-16x16.png',
-    '/icons/icon-32x32.png',
-    '/icons/icon-96x96.png',
-    '/icons/icon-144x144.png',
-    '/icons/icon-180x180.png',
-    '/icons/icon-192x192.png',
-    '/icons/icon-512x512.png',
-    '/icons/apple-touch-icon.png',
-    '/sounds/ok.wav',
-    '/sounds/no.wav',
-    '/sounds/start.wav',
-    '/sounds/bg.mp3'
+    '/study-english/',
+    '/study-english/templates/index.html',
+    '/study-english/templates/styles.css',
+    '/study-english/templates/manifest.json',
+    '/study-english/sounds/ok.wav',
+    '/study-english/sounds/no.wav',
+    '/study-english/sounds/start.wav',
+    '/study-english/img/10word.png',
+    'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
 ];
 
 // 설치 이벤트
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => cache.addAll(urlsToCache))
+            .then(cache => {
+                return cache.addAll(urlsToCache);
+            })
     );
 });
 
@@ -48,19 +45,7 @@ self.addEventListener('fetch', event => {
                 if (response) {
                     return response;
                 }
-                return fetch(event.request).then(
-                    response => {
-                        if(!response || response.status !== 200 || response.type !== 'basic') {
-                            return response;
-                        }
-                        const responseToCache = response.clone();
-                        caches.open(CACHE_NAME)
-                            .then(cache => {
-                                cache.put(event.request, responseToCache);
-                            });
-                        return response;
-                    }
-                );
+                return fetch(event.request);
             })
     );
 }); 
