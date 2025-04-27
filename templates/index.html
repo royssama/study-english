@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    <link href="./styles.css?v06" rel="stylesheet">
+    <link href="./styles.css?v07" rel="stylesheet">
     <style>
         .result-correct {
             color: #28a745 !important;
@@ -149,7 +149,6 @@
 
             <div class="quiz-container" id="textQuizContainer">
                 <div class="progress-container">
-                   
                     <span class="progress-text">0/0</span>
                 </div>
                 <div class="question-container">
@@ -159,11 +158,16 @@
                             / <span id="totalQuestions">0</span>
                         </span>
                     </div>
-                    <div class="progress-counter">
-                        <div class="button-group">
-                            <button onclick="retryQuiz()" class="retry-btn">다시 풀기</button>
-                            <button onclick="startOver()" class="start-over-btn">처음부터 다시하기</button>
-                        </div>
+                    <button class="menu-btn" onclick="toggleMenu('text')">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="menu-items" id="textMenuItems">
+                        <button onclick="retryQuiz()">
+                            <i class="fas fa-redo"></i> 다시 풀기
+                        </button>
+                        <button onclick="startOver()">
+                            <i class="fas fa-home"></i> 처음부터 다시하기
+                        </button>
                     </div>
                     <h2>정의를 보고 단어를 입력하세요</h2>
                     <div class="definition-box">
@@ -201,7 +205,6 @@
 
             <div class="quiz-container" id="soundQuizContainer" style="display: none;">
                 <div class="progress-container">
-                  
                     <span class="progress-text">0/0</span>
                 </div>
                 <div class="question-container">
@@ -211,11 +214,16 @@
                             / <span id="totalQuestions">0</span>
                         </span>
                     </div>
-                    <div class="progress-counter">
-                        <div class="button-group">
-                            <button onclick="retrySoundQuiz()" class="retry-btn">다시 풀기</button>
-                            <button onclick="startOver()" class="start-over-btn">처음부터 다시하기</button>
-                        </div>
+                    <button class="menu-btn" onclick="toggleMenu('sound')">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="menu-items" id="soundMenuItems">
+                        <button onclick="retryQuiz()">
+                            <i class="fas fa-redo"></i> 다시 풀기
+                        </button>
+                        <button onclick="startOver()">
+                            <i class="fas fa-home"></i> 처음부터 다시하기
+                        </button>
                     </div>
                     <div class="sound-controls">
                         <button class="btn btn-primary play-sound-btn">
@@ -707,8 +715,16 @@
             }
             
             currentQuestionIndex = 0;
-            document.querySelector('.result-table-container tbody').innerHTML = '';
-            document.querySelector('.results-table tbody').innerHTML = '';
+            
+            // 현재 선택된 퀴즈 모드에 따라 다른 결과 테이블 초기화
+            const selectedMode = document.querySelector('input[name="quizMode"]:checked').value;
+            if (selectedMode === 'text') {
+                document.querySelector('.result-table-container tbody').innerHTML = '';
+                document.querySelector('.results-table tbody').innerHTML = '';
+            } else {
+                document.querySelector('#soundQuizContainer .result-table-container tbody').innerHTML = '';
+            }
+            
             // 단어 목록 다시 섞기
             shuffleWords();
             getQuiz();
@@ -1044,6 +1060,38 @@
             shuffleWords();
             getQuiz();
         }
+
+        // 메뉴 토글 함수
+        function toggleMenu(mode) {
+            const menuItems = document.getElementById(`${mode}MenuItems`);
+            menuItems.classList.toggle('active');
+        }
+
+        // 메뉴 외부 클릭 시 메뉴 닫기
+        document.addEventListener('click', function(event) {
+            const textMenuItems = document.getElementById('textMenuItems');
+            const soundMenuItems = document.getElementById('soundMenuItems');
+            const textMenuBtn = document.querySelector('.menu-btn[onclick="toggleMenu(\'text\')"]');
+            const soundMenuBtn = document.querySelector('.menu-btn[onclick="toggleMenu(\'sound\')"]');
+            
+            if (textMenuItems && !textMenuItems.contains(event.target) && !textMenuBtn.contains(event.target)) {
+                textMenuItems.classList.remove('active');
+            }
+            
+            if (soundMenuItems && !soundMenuItems.contains(event.target) && !soundMenuBtn.contains(event.target)) {
+                soundMenuItems.classList.remove('active');
+            }
+        });
+
+        // 메뉴 항목 클릭 시 메뉴 닫기
+        document.querySelectorAll('.menu-items button').forEach(button => {
+            button.addEventListener('click', function() {
+                const parentMenu = this.closest('.menu-items');
+                if (parentMenu) {
+                    parentMenu.classList.remove('active');
+                }
+            });
+        });
     </script>
 </body>
 </html> 
