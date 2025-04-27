@@ -184,11 +184,11 @@
                         <div class="input-row">
                             <div class="input-group">
                                 <label for="englishInput">영어:</label>
-                                <input type="text" id="englishInput" placeholder="영어 단어를 입력하세요">
+                                <input type="text" id="englishInput" lang="en" placeholder="영어 단어를 입력하세요">
                             </div>
                             <div class="input-group">
                                 <label for="koreanInput">한글:</label>
-                                <input type="text" id="koreanInput" placeholder="한글 뜻을 입력하세요">
+                                <input type="text" id="koreanInput" lang="ko" placeholder="한글 뜻을 입력하세요">
                             </div>
                         </div>
                     </div>
@@ -240,8 +240,8 @@
                         </button>
                     </div>
                     <div class="input-group">
-                        <input type="text" class="form-control english-input" placeholder="영어 단어 입력">
-                        <input type="text" class="form-control korean-input" placeholder="한글 뜻 입력">
+                        <input type="text" class="form-control english-input" lang="en" placeholder="영어 단어 입력">
+                        <input type="text" class="form-control korean-input" lang="ko" placeholder="한글 뜻 입력">
                         <button class="btn btn-primary check-btn">확인</button>
                     </div>
                 </div>
@@ -1096,6 +1096,19 @@
                 if (parentMenu) {
                     parentMenu.classList.remove('active');
                 }
+            });
+        });
+
+        // 키보드 언어 자동 전환
+        document.querySelectorAll('input[lang="en"]').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.setAttribute('inputmode', 'latin');
+            });
+        });
+
+        document.querySelectorAll('input[lang="ko"]').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.setAttribute('inputmode', 'korean');
             });
         });
     </script>
