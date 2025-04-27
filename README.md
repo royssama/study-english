@@ -1,4 +1,4 @@
-# 영어 단어 학습 앱
+# 영어 단어 학습 앱  https://royssama.github.io/study-english/templates/
 
 영어 단어를 학습하고 퀴즈를 통해 복습할 수 있는 웹 애플리케이션입니다.
 
